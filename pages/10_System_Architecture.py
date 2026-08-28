@@ -1,16 +1,13 @@
 """
-Module 10: System Architecture & Academic Methodology
-Location: ./pages/9_System_Architecture.py
+Module 10: System Architecture & Data Flow Pipeline
+Location: ./pages/10_System_Architecture.py
 """
 
 import streamlit as st
 
 st.set_page_config(page_title="System Architecture | GTI-ARP", page_icon="🏛️", layout="wide")
 
-st.title("System Architecture & Research Methodology")
-st.markdown("End-to-end analytical pipeline, taxonomy of methods, and technological stack.")
-
-st.subheader("1. End-to-End Platform Pipeline")
+st.title("System Architecture & Data Flow Pipeline")
 
 pipeline_diagram = """
 +--------------------------------------------------------+
@@ -27,10 +24,10 @@ pipeline_diagram = """
         +------------------+------------------+
         v                                     v
 +------------------------------+ +------------------------------+
-|    STATISTICAL ANALYTICS     | |     PRE-EVENT ML PIPELINE    |
-|  * 5-Yr Rolling Z-Score      | |  * Scikit-Learn Pipeline     |
-|  * Period Trajectory Deltas  | |  * Random Forest Classifier  |
-|  * Natural Earth Geo Maps    | |  * Feature Importances       |
+|    STATISTICAL ANALYTICS     | |   MULTI-MODEL ML PIPELINE    |
+|  * 5-Yr Rolling Z-Score      | |  * Logistic Reg / RF / HGB   |
+|  * Period Trajectory Deltas  | |  * Temporal Holdout Split    |
+|  * Natural Earth Geo Maps    | |  * Permutation Importance    |
 +--------------+---------------+ +--------------+---------------+
                |                                |
                v                                v
@@ -45,7 +42,7 @@ pipeline_diagram = """
                                   v
 +--------------------------------------------------------+
 |     LONGITUDINAL FORECASTING & BACKTESTING ENGINE      |
-|     (Holt's Double Exponential Smoothing | MAE/MAPE)   |
+|     (Holt's Double Exponential Smoothing | MAE/RMSE)   |
 +--------------------------+-----------------------------+
                            |
                            v
@@ -58,26 +55,25 @@ pipeline_diagram = """
 st.code(pipeline_diagram, language="text")
 
 st.markdown("---")
-st.subheader("2. Academic Taxonomy: Distinguishing AI vs Analytics")
-
+st.subheader("Academic Taxonomy: Distinguishing AI vs Analytics")
 col1, col2 = st.columns(2)
 with col1:
     st.markdown("""
     **Machine Learning (Supervised):**
-    * **Algorithm:** Random Forest Multiclass Classifier.
+    * **Models:** Logistic Regression, Random Forest, HistGradientBoosting.
     * **Task:** Tactical Attack Type Classification based on pre-event context.
-    * **Validation:** Temporal Out-of-Time Holdout Split + Stratified validation.
-    * **Explainability:** Scikit-Learn Gini Importance / MDI aggregation.
+    * **Validation:** Three-way Temporal Holdout Split (Train/Val/Test).
+    * **Explainability:** Permutation Feature Importance.
 
     **Longitudinal Forecasting:**
-    * **Algorithm:** Holt's Linear Double Exponential Smoothing.
+    * **Models:** Holt's Linear, SES, Moving Average, Naive Baseline.
     * **Validation:** Out-of-sample backtesting against Naive baseline.
     """)
 
 with col2:
     st.markdown("""
     **Deterministic Analytics:**
-    * **Threat Risk Scoring:** Transparent weighted formula (0 - 100).
+    * **Threat Risk Scoring:** Transparent weighted formula ($0 - 100$).
     * **Scenario Simulation:** Deterministic recalculation of risk components.
 
     **Statistical Methods:**
@@ -85,13 +81,3 @@ with col2:
     * **Trend Velocity:** Two-period percentage change calculations.
     * **Intelligence Synthesis:** Rule-based parametric document generation.
     """)
-
-st.markdown("---")
-st.subheader("3. Technology Stack Inventory")
-st.markdown("""
-* **Core Language:** Python
-* **Web Framework:** Streamlit
-* **Data Processing:** Pandas, NumPy, PyArrow (Parquet caching)
-* **Machine Learning:** Scikit-Learn, Joblib
-* **Data Visualization:** Plotly Express & Plotly Graph Objects
-""")

@@ -1,13 +1,24 @@
 # Global Threat Intelligence & Analytical Risk Platform (GTI-ARP)
 
-An academic, data-driven machine learning and analytics platform for studying longitudinal threat incidents, spatial concentrations, and tactical classification patterns.
+An academic, data-driven machine learning, statistical anomaly surveillance, and longitudinal threat analytics platform.
 
 ---
 
-## 1. Quickstart (Windows Execution)
+## 1. Quickstart & Execution
 
-### Step 1: Initialize Virtual Environment
-```cmd
+```bash
+# 1. Initialize Virtual Environment
 python -m venv .venv
-.venv\Scripts\activate
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# 2. Install Locked Dependencies
 pip install -r requirements.txt
+
+# 3. Execute Multi-Model Training & Temporal Validation Pipeline
+python train_pipeline.py
+
+# 4. Run Automated Test Suite
+pytest tests/
+
+# 5. Launch Streamlit Executive Platform
+streamlit run app.py

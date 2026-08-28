@@ -1,1 +1,1 @@
-"""GTI-ARP Source Engine Package Initialization."""
+"""GTI-ARP Core Intelligence & Analytics Engine."""

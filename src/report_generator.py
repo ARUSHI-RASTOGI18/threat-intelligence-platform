@@ -1,12 +1,12 @@
 """
 Deterministic Intelligence Briefing Generator (13-Section Academic Brief)
 Location: ./src/report_generator.py
-Purpose: Generates a complete, structured, fact-grounded analytical intelligence brief.
 """
 
 import pandas as pd
 from datetime import datetime
-from src.analytics import detect_historical_anomalies, calculate_period_trends
+from src.analytics import calculate_period_trends
+from src.anomaly_detection import detect_historical_anomalies
 from src.data_loader import audit_dataset_quality
 from src.forecasting import generate_incident_forecast
 
@@ -24,10 +24,6 @@ def generate_intelligence_digest(df: pd.DataFrame, risk_df: pd.DataFrame) -> str
     peak_incident_year = int(yearly_incidents.idxmax())
     peak_incident_val = int(yearly_incidents.max())
 
-    yearly_fatalities = df.groupby("year")["fatalities"].sum()
-    peak_fatality_year = int(yearly_fatalities.idxmax())
-    peak_fatality_val = int(yearly_fatalities.max())
-
     top_countries = df["country"].value_counts().head(5).to_dict()
     top_attacks = df["attack_type"].value_counts().head(5).to_dict()
     top_weapons = df["weapon_type"].value_counts().head(5).to_dict()
@@ -39,46 +35,35 @@ def generate_intelligence_digest(df: pd.DataFrame, risk_df: pd.DataFrame) -> str
     
     quality = audit_dataset_quality(df)
     forecast_res = generate_incident_forecast(df, forecast_horizon=3)
-    eval_m = forecast_res.get("evaluation_metrics", {})
 
-    top_risk_countries = risk_df.head(5)[["country", "composite_risk_score", "risk_level"]].to_dict(orient="records") if not risk_df.empty else []
-
-    report = f"""# GLOBAL THREAT INTELLIGENCE & ANALYTICAL RISK BRIEFING
+    report = f"""# GLOBAL THREAT INTELLIGENCE & ANALYTICAL RISK SYNTHESIS BRIEF
 **Classification:** HISTORICAL ACADEMIC EVALUATION (UNCLASSIFIED)  
-**Platform Reference:** GTI-ARP Decision Support Engine  
-**Report Generated:** {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}  
-**Temporal Coverage:** {min_yr} – {max_yr}
+**System Reference:** GTI-ARP Decision Support Engine  
+**Generation Timestamp:** {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}  
+**Temporal Horizon:** {min_yr} – {max_yr}
 
 ---
 
 ## 1. Executive Summary
-Across the historical span of **{min_yr} to {max_yr}**, the platform evaluated **{total_incidents:,}** cataloged incident records across **{df['country'].nunique()}** sovereign territories.
+Across the historical span of **{min_yr} to {max_yr}**, the platform evaluated **{total_incidents:,}** incident records across **{df['country'].nunique()}** sovereign entities.
 * **Cumulative Casualties:** {total_fatalities + total_injured:,} ({total_fatalities:,} Fatalities | {total_injured:,} Non-Fatal Casualties)
 * **Historical Peak Activity:** Year **{peak_incident_year}** ({peak_incident_val:,} logged events)
-* **Historical Peak Lethality:** Year **{peak_fatality_year}** ({peak_fatality_val:,} fatalities)
-* **Data Quality Index:** `{quality['data_quality_score']}/100` (Completeness: `{quality['completeness_pct']}%`, Geocoding: `{quality['geocoding_coverage_pct']}%`)
+* **Data Quality Score:** `{quality['data_quality_score']}/100` (Completeness: `{quality['completeness_pct']}%`, Geocoding: `{quality['geocoding_coverage_pct']}%`)
 
 ---
 
-## 2. Global Threat Overview & Statistical Trends
-* **Trajectory Direction:** **{trends['trend_direction']}** comparing {trends['recent_span']} against baseline {trends['prior_span']}.
+## 2. Global Trend Analysis
+* **Trajectory Direction:** **{trends['trend_direction']}** ({trends['recent_span']} vs baseline {trends['prior_span']})
 * **Period Velocity Deltas:**
-  * Incident Frequency: `{trends['incident_delta']:+,.1f}%`
-  * Fatalities Volume: `{trends['fatality_delta']:+,.1f}%`
-  * Injury Impact: `{trends['injured_delta']:+,.1f}%`
+  * Incident Volume Delta: `{trends['incident_delta']:+,.1f}%`
+  * Fatalities Delta: `{trends['fatality_delta']:+,.1f}%`
+  * Injuries Delta: `{trends['injured_delta']:+,.1f}%`
 
 ---
 
-## 3. Statistical Anomaly Surveillance
-Applying a 5-year rolling Z-score filter ($Z \\ge 2.0$) revealed **{len(flagged_anomalies)}** statistically significant historical surge events:
+## 3. Geographic Concentration
+Top sovereign territories accounting for the highest historical incident concentrations:
 """
-    if not flagged_anomalies.empty:
-        for _, row in flagged_anomalies.iterrows():
-            report += f"- **Year {int(row['year'])}**: {int(row['incident_count']):,} events (Rolling Baseline: {int(row['rolling_mean']):,}, Deviation: `{row['pct_deviation']:+,.1f}%`, Z-Score: `{row['z_score']:.2f}`)\n"
-    else:
-        report += "- Zero longitudinal surges exceeded the critical $Z \\ge 2.0$ boundary.\n"
-
-    report += "\n---\n\n## 4. Geographic Concentration\n"
     for c, cnt in top_countries.items():
         pct = (cnt / total_incidents) * 100
         report += f"- **{c}**: {cnt:,} incidents ({pct:.1f}% global density)\n"
@@ -86,13 +71,12 @@ Applying a 5-year rolling Z-score filter ($Z \\ge 2.0$) revealed **{len(flagged_
     report += """
 ---
 
-## 5. Tactical Methodology & Weapon Vectors
-### Top 5 Attack Methodologies
+## 4. Attack Methodology & Tactical Profiles
 """
     for atk, cnt in top_attacks.items():
         report += f"- **{atk}**: {cnt:,} incidents ({(cnt/total_incidents)*100:.1f}%)\n"
 
-    report += "\n### Top 5 Weapon Categories\n"
+    report += "\n---\n\n## 5. Weapon Category Analysis\n"
     for weap, cnt in top_weapons.items():
         report += f"- **{weap}**: {cnt:,} incidents ({(cnt/total_incidents)*100:.1f}%)\n"
 
@@ -100,45 +84,40 @@ Applying a 5-year rolling Z-score filter ($Z \\ge 2.0$) revealed **{len(flagged_
     for targ, cnt in top_targets.items():
         report += f"- **{targ}**: {cnt:,} incidents ({(cnt/total_incidents)*100:.1f}%)\n"
 
-    if top_risk_countries:
-        report += "\n---\n\n## 7. Analytical Threat Index (Highest Ranking Sovereignties)\n"
-        for rk in top_risk_countries:
-            report += f"- **{rk['country']}**: Score `{rk['composite_risk_score']}/100` — **{rk['risk_level']} Classification**\n"
+    if not risk_df.empty:
+        report += "\n---\n\n## 7. Country Risk Ranking\n"
+        for _, rk in risk_df.head(5).iterrows():
+            report += f"- **{rk['country']}**: Threat Index `{rk['composite_risk_score']}/100` — **{rk['risk_level']} Classification**\n"
 
     report += f"""
 ---
 
-## 8. Forecast Outlook & Longitudinal Extrapolations
-* **Forecasting Method:** Holt's Linear Double Exponential Smoothing
-* **Backtested Out-of-Sample MAE:** `{eval_m.get('mae', 'N/A')}` incidents (Naive Baseline MAE: `{eval_m.get('naive_mae', 'N/A')}`)
-* **Backtested MAPE:** `{eval_m.get('mape', 'N/A')}%`
-* **Next 3 Horizon Estimates:** {', '.join([f'{yr}: ~{int(cnt):,}' for yr, cnt in zip(forecast_res.get('future_years', []), forecast_res.get('forecast_counts', []))])}
+## 8. Forecast Outlook & Uncertainty Bounds
+* **Extrapolation Method:** Holt's Linear Double Exponential Smoothing
+* **Next 3 Horizon Projections:** {', '.join([f'{yr}: ~{int(cnt):,}' for yr, cnt in zip(forecast_res.get('future_years', []), forecast_res.get('forecast_counts', []))])}
 
 ---
 
-## 9. Machine Learning Tactical Insights
-The embedded Random Forest multiclass classifier achieves empirical out-of-time accuracy across pre-event situational contexts. Primary predictive reliance concentrates on Weapon Vectors, Target Sectors, and Sovereign Geographies.
+## 9. Anomaly Surveillance
+Applying a 5-year rolling Z-score filter ($Z \\ge 2.0$) revealed **{len(flagged_anomalies)}** surge periods.
 
 ---
 
-## 10. Key Findings & Synthesis
-1. Spatial vulnerability remains heavily clustered in specific sub-regions.
-2. Explosive and armed assault tactics comprise over 70% of historical incidents.
-3. Longitudinal forecasting indicates stable-to-decelerating global aggregate trends in the final recorded periods.
+## 10. Machine Learning Insights
+Multi-model validation established Random Forest / HistGradientBoosting as the primary multiclass predictor based on pre-event context.
 
 ---
 
-## 11. Data Quality & Integrity Disclosure
-* **Indexed Incidents:** {quality['total_records']:,}
-* **Geocoding Coordinate Integrity:** {quality['geocoding_coverage_pct']}%
-* **Feature Completeness:** {quality['completeness_pct']}%
+## 11. Data Quality & Audit Metrics
+* **Total Indexed Incidents:** {quality['total_records']:,}
+* **Geocoding Integrity:** {quality['geocoding_coverage_pct']}%
+* **Completeness:** {quality['completeness_pct']}%
 
 ---
 
-## 12. Academic Limitations
-* Models evaluate historical patterns without real-time surveillance inputs.
-* Feature importances indicate statistical correlation within the dataset, not causal necessity.
-* Longitudinal reporting completeness varies across historical decades (1970s vs 2010s).
+## 12. Model & Analytical Limitations
+1. Evaluates pre-event contextual signals without claiming causality.
+2. Historical reporting completeness varies across historical recording decades.
 
 ---
 

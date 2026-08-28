@@ -1,7 +1,6 @@
 """
-Pre-Event Feature Engineering & Preprocessing
+Feature Extraction, Pre-Event Transformers & Pipeline Builder
 Location: ./src/preprocessing.py
-Purpose: Transforms raw input attributes into ML-safe features without post-event leakage.
 """
 
 from sklearn.pipeline import Pipeline
@@ -10,13 +9,12 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.impute import SimpleImputer
 import pandas as pd
 
-# Explicit ML feature schema: ONLY variables knowable prior to or at the immediate onset
+# Strict Pre-Event Feature Definition: ONLY variables known prior to or at incident onset
 CATEGORICAL_FEATURES = ["region", "target_type", "weapon_type"]
 NUMERICAL_FEATURES = ["suicide", "success"]
 TARGET_COLUMN = "attack_type"
 
 def build_preprocessor() -> ColumnTransformer:
-    """Constructs a scikit-learn ColumnTransformer for categorical & numerical pipeline."""
     cat_transformer = Pipeline(steps=[
         ("imputer", SimpleImputer(strategy="constant", fill_value="Unknown")),
         ("onehot", OneHotEncoder(handle_unknown="ignore", sparse_output=False))
@@ -37,10 +35,7 @@ def build_preprocessor() -> ColumnTransformer:
     return preprocessor
 
 def prepare_data_for_training(df: pd.DataFrame, min_samples_per_class: int = 50):
-    """Filters low-frequency target classes and returns X, y with label maps."""
     df_clean = df.dropna(subset=[TARGET_COLUMN]).copy()
-    
-    # Prune obscure classes to guarantee solid multiclass statistical validity
     class_counts = df_clean[TARGET_COLUMN].value_counts()
     valid_classes = class_counts[class_counts >= min_samples_per_class].index.tolist()
     df_filtered = df_clean[df_clean[TARGET_COLUMN].isin(valid_classes)].copy()

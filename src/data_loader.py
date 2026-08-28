@@ -1,8 +1,6 @@
 """
-Data Ingestion, Dynamic Schema Adapter & Quality Audit Engine
+Data Ingestion, Dynamic Schema Normalization & Comprehensive Quality Audit Engine
 Location: ./src/data_loader.py
-Purpose: Ingests raw threat CSV data, resolves duplicates, computes transparent
-         data quality scores, and caches standardized Parquet data with Streamlit caching.
 """
 
 import os
@@ -104,7 +102,7 @@ def standardize_dataframe(df_raw: pd.DataFrame) -> pd.DataFrame:
 
 def generate_demo_dataset() -> pd.DataFrame:
     np.random.seed(42)
-    n = 2500
+    n = 3000
     years = np.random.randint(1995, 2018, n)
     countries = ["Iraq", "Afghanistan", "Pakistan", "India", "Nigeria", "Colombia", "Philippines", "United Kingdom", "United States", "Somalia"]
     regions = ["Middle East & North Africa", "South Asia", "Sub-Saharan Africa", "South America", "Southeast Asia", "Western Europe", "North America"]
@@ -132,7 +130,7 @@ def generate_demo_dataset() -> pd.DataFrame:
         })
     return pd.DataFrame(data)
 
-@st.cache_data(show_spinner="Optimizing and caching dataset into memory...")
+@st.cache_data(show_spinner="Loading and verifying analytical dataset...")
 def load_analytical_data(force_reload: bool = False) -> pd.DataFrame:
     processed_dir = os.path.join("data", "processed")
     processed_parquet = os.path.join(processed_dir, "cleaned_dataset.parquet")
@@ -164,9 +162,13 @@ def load_analytical_data(force_reload: bool = False) -> pd.DataFrame:
 
 @st.cache_data
 def audit_dataset_quality(df: pd.DataFrame) -> dict:
+    """
+    Computes a mathematically grounded Data Quality Audit Score:
+    Score = 0.35 * Completeness + 0.30 * Geocoding_Density + 0.20 * Temporal_Integrity + 0.15 * Uniqueness
+    """
     total_rows = len(df)
     if total_rows == 0:
-        return {"data_quality_score": 0.0, "completeness": 0.0, "geo_coverage": 0.0}
+        return {"data_quality_score": 0.0, "completeness_pct": 0.0, "geocoding_coverage_pct": 0.0}
 
     core_cols = ["year", "country", "region", "attack_type", "target_type", "weapon_type", "fatalities", "injured"]
     null_counts = {c: int(df[c].isnull().sum()) for c in df.columns}
@@ -175,21 +177,36 @@ def audit_dataset_quality(df: pd.DataFrame) -> dict:
     total_cells = len(core_cols) * total_rows
     completeness = round(((total_cells - missing_cells) / total_cells) * 100.0, 2)
     
-    geo_valid = int(df["latitude"].notnull().sum() & df["longitude"].notnull().sum())
+    # Geocoding validity
+    geo_valid = int((df["latitude"].notnull() & df["longitude"].notnull() & 
+                     df["latitude"].between(-90, 90) & df["longitude"].between(-180, 180)).sum())
     geo_coverage = round((geo_valid / total_rows) * 100.0, 2)
     
-    raw_dups = int(df.duplicated(subset=core_cols).sum())
-    dup_pct = round((raw_dups / total_rows) * 100.0, 2)
+    # Temporal consistency (years within valid historical window)
+    temp_valid = int(df["year"].between(1900, 2030).sum())
+    temp_integrity = round((temp_valid / total_rows) * 100.0, 2)
+    
+    # Uniqueness (identifying exact duplicate event vectors vs valid repeated strike entries)
+    exact_dups = int(df.duplicated(subset=core_cols).sum())
+    dup_pct = round((exact_dups / total_rows) * 100.0, 2)
+    uniqueness_score = max(0.0, 100.0 - (dup_pct * 2.5))
 
-    data_quality_score = round(0.50 * completeness + 0.30 * geo_coverage + 0.20 * (100.0 - min(dup_pct, 20.0) * 5), 1)
+    quality_score = round(
+        0.35 * completeness +
+        0.30 * geo_coverage +
+        0.20 * temp_integrity +
+        0.15 * uniqueness_score,
+        1
+    )
 
     return {
         "total_records": total_rows,
         "total_columns": len(df.columns),
-        "data_quality_score": min(100.0, max(0.0, data_quality_score)),
+        "data_quality_score": min(100.0, max(0.0, quality_score)),
         "completeness_pct": completeness,
         "geocoding_coverage_pct": geo_coverage,
-        "duplicate_rows_count": raw_dups,
+        "temporal_integrity_pct": temp_integrity,
+        "duplicate_rows_count": exact_dups,
         "duplicate_rows_pct": dup_pct,
         "null_counts": null_counts,
         "memory_mb": round(df.memory_usage().sum() / (1024 ** 2), 2)

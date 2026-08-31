@@ -1,70 +1,103 @@
+<div align="center">
+
 # 🛡️ Global Threat Intelligence & Analytical Risk Platform (GTI-ARP)
+### *Enterprise Multi-Model Intelligence, Geospatial Analytics & Time-Series Forecaster*
 
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white)](https://streamlit.io/)
-[![Scikit-Learn](https://img.shields.io/badge/scikit--learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
-[![Plotly](https://img.shields.io/badge/Plotly-3F4F75?style=for-the-badge&logo=plotly&logoColor=white)](https://plotly.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Framework](https://img.shields.io/badge/Streamlit-1.30%2B-FF4B4B.svg?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![Machine Learning](https://img.shields.io/badge/Scikit--Learn-1.3%2B-F7931E.svg?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
+[![Visualization](https://img.shields.io/badge/Plotly-Interactive-3F4F75.svg?style=for-the-badge&logo=plotly&logoColor=white)](https://plotly.com/)
+[![Architecture](https://img.shields.io/badge/Data_Engine-Apache_Arrow_Parquet-teal.svg?style=for-the-badge)](https://arrow.apache.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 
-> **An enterprise-grade, deterministic intelligence platform that unifies multi-model supervised machine learning, longitudinal time-series forecasting, and geospatial risk telemetry across 180,000+ historical conflict events.**
+<p align="center">
+  <b>A production-grade, out-of-time validated defense intelligence telemetry suite processing 181,691 verified conflict incidents across 205 sovereign territories.</b>
+</p>
+
+[Key Features](#-key-features) • [System Architecture](#-system-architecture--pipeline) • [Machine Learning & Benchmarks](#-multi-model-machine-learning-suite) • [Forecasting Engine](#-longitudinal-forecasting--walk-forward-validation) • [Installation](#-installation--quickstart)
+
+</div>
 
 ---
 
-## 📌 Executive Overview
+## 📌 Executive Summary & Problem Statement
 
-The **Global Threat Intelligence & Analytical Risk Platform (GTI-ARP)** is an analytical command center designed to process, model, and visualize geopolitical incident patterns from 1970 to 2017. Built on high-performance Apache Arrow / Parquet data pipelines, the platform bridges the gap between raw conflict databases and high-level strategic intelligence.
+Geopolitical conflict data is inherently **sparse, high-variance, class-imbalanced, and subject to severe temporal reporting bias** (especially with the rise of global digital reporting post-1998). Standard analytics tools and basic naive ML models suffer from:
 
-Unlike black-box dashboards, GTI-ARP strictly demarcates **Supervised Machine Learning** (for tactical vector classification) from **Deterministic Risk Analytics** (for transparent composite threat scoring and rolling anomaly detection).
+1. **Retrospective Data Leakage:** Using standard random train-test k-fold cross-validation mixes past and future states, inflating model accuracy by up to 35%.
+2. **Black-Box Obfuscation:** Masking non-deterministic AI hallucinations with factual statistical metrics.
+3. **Outlier Skew:** A single mass-casualty incident artificially distorts localized composite risk rankings.
+
+**GTI-ARP solves this** by establishing an end-to-end analytical command center built upon:
+* **Chronological Out-of-Time Holdout Partitions** (Zero data leakage).
+* **Dual-Track Engine Demarcation:** Mathematical separation between Supervised ML classifiers and Deterministic Closed-Form Risk Algorithms.
+* **Sub-linear Logarithmic Hazard Weighting** to normalize casualty variance.
 
 ---
 
-## 🖥️ Command Center Interface
+## 📸 Command Center Visual Interface
+
+### 1. Geospatial Threat Command Center (Dual Visual Encoding)
+* **Mode 1 (All Tactical Vectors):** Categorical multi-color assignment per operational attack vector.
+* **Mode 2 (Filtered Vector):** Continuous monochromatic gradient scaling via dynamic spatial density, log-fatalities, and injury weights. Includes automated historical playback from 1970 to 2017.
 
 <div align="center">
-  <img src="assets/global_map.png" alt="Geospatial Threat Map" width="90%">
-  <p><i>Figure 1: Geospatial Threat Intelligence Command Center with Dual Visual Encoding (Categorical Identity + Monochromatic Intensity).</i></p>
+  <img src="assets/global_map.png" alt="Geospatial Map UI" width="95%" style="border-radius:8px; border:1px solid #30363D;">
 </div>
 
 <br>
 
+### 2. Time-Series Forecasting & Expanding-Window Backtesting
+* Out-of-sample forward projections with **$\pm 1.96\sigma$ empirical residual uncertainty bounds**.
+* Interactive comparison between **Static Holdout ($k$-periods)** and **Multi-Epoch Walk-Forward Rolling Validation**.
+
 <div align="center">
-  <img src="assets/forecasting.png" alt="Forecasting & Backtesting" width="90%">
-  <p><i>Figure 2: Longitudinal Incident Forecasting with Holt's Smoothing and Expanding-Window Walk-Forward Validation.</i></p>
+  <img src="assets/forecasting.png" alt="Forecasting UI" width="95%" style="border-radius:8px; border:1px solid #30363D;">
+</div>
+
+<br>
+
+### 3. Multi-Model Performance & Multiclass Diagnostics
+* Full benchmark suite evaluating **Random Forest, HistGradientBoosting, L2 Regularized Logistic Regression**, and **Zero-Variance Dummy Baseline**.
+* Normalized Multiclass Confusion Matrix isolating minority-class tactical vectors (Assassinations, Hostage Incidents, Hijackings).
+
+<div align="center">
+  <img src="assets/model_performance.png" alt="Model Performance UI" width="95%" style="border-radius:8px; border:1px solid #30363D;">
 </div>
 
 ---
 
-## 🏗️ System Architecture & Data Pipeline
+## 🏗️ System Architecture & Pipeline
 
-The pipeline uses strict chronological partitioning (Train $\le$ 2011, Val 2012–2014, Test 2015–2017) to completely eliminate temporal lookahead data leakage.
+The GTI-ARP framework is engineered across four modular layers:
 
 ```mermaid
 flowchart TD
-    subgraph L1 [Layer 1: Corpus Ingestion & Data Quality]
-        A[📂 GTD Raw Corpus: 181k Records] --> B[🛡️ Schema Harmonizer & Geocode Imputation]
-        B --> C[⚡ Parquet Arrow In-Memory IPC Cache]
+    subgraph L1 [LAYER 1: Ingestion & Quality Assurance]
+        A[📂 Global Terrorism Database: 181,691 Events] --> B[🛡️ Schema Adapter & Coordinate Imputation]
+        B --> C[⚡ High-Throughput Parquet Arrow IPC Cache]
     end
 
-    subgraph L2 [Layer 2: Dual Computation Engines]
+    subgraph L2 [LAYER 2: Dual Computation Engines]
         C --> D[📐 Deterministic Risk Engine]
-        C --> E[🤖 Multi-Model ML Classification]
+        C --> E[🤖 Supervised Multi-Model ML Pipeline]
         
-        D --> D1[Composite Threat Score: 0-100]
-        D --> D2[Rolling 5-Yr Z-Score Anomalies: Z >= 2.0]
+        D --> D1[Composite Threat Index: 0-100]
+        D --> D2[5-Yr Rolling Anomaly Filter: Z >= 2.0]
         
-        E --> E1[Random Forest Bagging]
-        E --> E2[HistGradientBoosting]
-        E --> E3[L2 Logistic Regression]
+        E --> E1[RandomForest Bagging Classifier]
+        E --> E2[HistGradientBoosting Classifier]
+        E --> E3[Multinomial Logistic Regression L2]
     end
 
-    subgraph L3 [Layer 3: Simulation & Time-Series Engine]
-        D1 & E1 --> F[🎯 Parametric What-If Simulator]
-        C --> G[📈 Longitudinal Forecaster: Holt's Double Exp]
+    subgraph L3 [LAYER 3: Simulation & Time-Series Engine]
+        D1 & E1 --> F[🎯 Interactive What-If Scenario Simulator]
+        C --> G[📈 Longitudinal Forecaster: Holt's Linear SES]
     end
 
-    subgraph L4 [Layer 4: Executive Decision Support]
-        F & G & D2 --> H[🖥️ Interactive Streamlit Command Center]
-        H --> I[📑 Deterministic 13-Section AI Synthesis Brief]
+    subgraph L4 [LAYER 4: Decision Support & Cartography]
+        F & G & D2 --> H[🖥️ Streamlit Command HUD & Natural Earth GIS]
+        H --> I[📑 Deterministic 13-Section AI Intelligence Brief]
     end
 
     style L1 fill:#161B22,stroke:#58A6FF,stroke-width:1.5px

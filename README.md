@@ -98,21 +98,34 @@ flowchart TB
         D9["9_System_Architecture.py"]
     end
 
-    A3 --> B1 & B2 & B3 & C1
-    B1 --> D1 & D2
+    A3 --> B1
+    A3 --> B2
+    A3 --> B3
+    A3 --> C1
+    B1 --> D1
+    B1 --> D2
     B2 --> D4
     B3 --> D5
     B1 --> D6
     C1 --> D3
-    B1 & B2 & B3 & C1 --> D0
-    B1 & B2 & B3 & C1 --> D7
-    D0 & D1 & D2 & D3 & D4 & D5 & D6 & D7 --> D8
+    B1 --> D0
+    B2 --> D0
+    B3 --> D0
+    C1 --> D0
+    B1 --> D7
+    B2 --> D7
+    B3 --> D7
+    C1 --> D7
+    D0 --> D8
     D8 --> D9
 
     style DETERMINISTIC fill:#0d1b2a,stroke:#4cc9f0,color:#fff
-> **Design Rationale:** The **Deterministic Track** (risk scoring, hotspot indexing, forecasting) never depends on the **Probabilistic Track** (ML attack-type classification), and vice versa. This guarantees that core risk indices remain explainable and auditable via closed-form mathematics even if the ML subsystem is offline, upgraded, or retrained.
+    style PROBABILISTIC fill:#1b0d2a,stroke:#f72585,color:#fff
+    style DATA fill:#0a0a0a,stroke:#888,color:#fff
+    style PRESENTATION fill:#111,stroke:#666,color:#fff
+```
 
----
+> **Design Rationale:** The **Deterministic Track** (risk scoring, hotspot indexing, forecasting) never depends on the **Probabilistic Track** (ML attack-type classification), and vice versa. This guarantees that core risk indices remain explainable and auditable via closed-form mathematics even if the ML subsystem is offline, upgraded, or retrained.
 
 ## 4. Deep-Dive File-by-File Technical Blueprint
 

@@ -265,7 +265,7 @@ $$\text{Analytical Uncertainty Bounds: } \quad \hat{y}_{t+h} \pm 1.96 \cdot \sig
 ### Prerequisites
 * Python 3.10, 3.11, or 3.12
 * Git
-* $\sim 500\text{ MB}$ free disk space
+* ~500 MB free disk space
 
 ```bash
 # 1. Clone the repository
@@ -286,6 +286,3 @@ pip install -r requirements.txt
 
 # 4. Launch the Command Center
 streamlit run app.py
-    style PROBABILISTIC fill:#1b0d2a,stroke:#f72585,color:#fff
-    style DATA fill:#0a0a0a,stroke:#888,color:#fff
-    style PRESENTATION fill:#111,stroke:#666,color:#fff

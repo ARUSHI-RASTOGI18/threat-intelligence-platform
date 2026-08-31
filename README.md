@@ -1,4 +1,23 @@
-[Live Demo](http://localhost:8501) · [Documentation](#4-deep-dive-file-by-file-technical-blueprint) · [Report Bug](https://github.com/ARUSHI-RASTOGI18/threat-intelligence-platform/issues) · [Request Feature](https://github.com/ARUSHI-RASTOGI18/threat-intelligence-platform/issues)
+<div align="center">
+
+# 🛡️ GTI-ARP
+### Global Threat Intelligence & Analytical Risk Platform
+**A Leakage-Proof, Dual-Track Analytical System for Sovereign Risk Quantification & Tactical Forecasting**
+
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Streamlit_Cloud-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://gti-arp-threat-intelligence.streamlit.app/)
+[![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-1.3%2B-F7931E.svg?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
+[![Visualization](https://img.shields.io/badge/Plotly-Interactive-3F4F75.svg?style=for-the-badge&logo=plotly&logoColor=white)](https://plotly.com/)
+[![Storage Engine](https://img.shields.io/badge/Data_Engine-Apache_Arrow_Parquet-teal.svg?style=for-the-badge)](https://arrow.apache.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
+
+<br/>
+
+🚀 **[Click Here to Launch Live Command Center HUD](https://gti-arp-threat-intelligence.streamlit.app/)**
+
+[Live App](https://gti-arp-threat-intelligence.streamlit.app/) · [Technical Blueprint](#4-deep-dive-file-by-file-technical-blueprint) · [Benchmarks](#5-machine-learning-experimental-design--benchmark-table) · [Deployment Guide](#11-step-by-step-installation--local-setup-guide)
+
+</div>
 
 ---
 

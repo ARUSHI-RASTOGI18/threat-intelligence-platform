@@ -286,3 +286,31 @@ pip install -r requirements.txt
 
 # 4. Launch the Command Center
 streamlit run app.py
+```
+
+The application will launch automatically at `http://localhost:8501`.
+
+---
+
+## 12. Contributing
+
+Contributions to GTI-ARP are welcome. Please ensure that all proposed modifications adhere to the platform's core architectural tenets:
+1. **Zero Temporal Leakage:** Validation logic must strictly maintain chronological partitions.
+2. **Dual-Track Isolation:** Deterministic risk calculations must remain decoupled from probabilistic ML models.
+
+```bash
+# Fork the repo, create a feature branch, and submit a PR
+git checkout -b feature/your-feature-name
+git commit -m "feat: Describe your implementation"
+git push origin feature/your-feature-name
+```
+
+---
+
+## 13. License
+
+Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for complete terms.
+
+<div align="center">
+  <b>GTI-ARP — Engineered for high-stakes quantitative defense analytics and geopolitical risk intelligence.</b>
+</div>

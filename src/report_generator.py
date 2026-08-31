@@ -10,28 +10,33 @@ from src.anomaly_detection import detect_historical_anomalies
 from src.data_loader import audit_dataset_quality
 from src.forecasting import generate_incident_forecast
 
+
 def generate_intelligence_digest(df: pd.DataFrame, risk_df: pd.DataFrame) -> str:
     if df.empty:
         return "# Analytical Report\n\nDataset is empty. No telemetry available."
 
-    min_yr = int(df["year"].min())
-    max_yr = int(df["year"].max())
+    min_yr = int(df["year"].min()) if "year" in df.columns else 1970
+    max_yr = int(df["year"].max()) if "year" in df.columns else 2017
     total_incidents = len(df)
-    total_fatalities = int(df["fatalities"].sum())
-    total_injured = int(df["injured"].sum())
+    total_fatalities = int(df["fatalities"].sum()) if "fatalities" in df.columns else 0
+    total_injured = int(df["injured"].sum()) if "injured" in df.columns else 0
 
-    yearly_incidents = df.groupby("year").size()
-    peak_incident_year = int(yearly_incidents.idxmax())
-    peak_incident_val = int(yearly_incidents.max())
+    if "year" in df.columns:
+        yearly_incidents = df.groupby("year").size()
+        peak_incident_year = int(yearly_incidents.idxmax())
+        peak_incident_val = int(yearly_incidents.max())
+    else:
+        peak_incident_year = "N/A"
+        peak_incident_val = 0
 
-    top_countries = df["country"].value_counts().head(5).to_dict()
-    top_attacks = df["attack_type"].value_counts().head(5).to_dict()
-    top_weapons = df["weapon_type"].value_counts().head(5).to_dict()
-    top_targets = df["target_type"].value_counts().head(5).to_dict()
+    top_countries = df["country"].value_counts().head(5).to_dict() if "country" in df.columns else {}
+    top_attacks = df["attack_type"].value_counts().head(5).to_dict() if "attack_type" in df.columns else {}
+    top_weapons = df["weapon_type"].value_counts().head(5).to_dict() if "weapon_type" in df.columns else {}
+    top_targets = df["target_type"].value_counts().head(5).to_dict() if "target_type" in df.columns else {}
 
     trends = calculate_period_trends(df)
     anomalies_df = detect_historical_anomalies(df)
-    flagged_anomalies = anomalies_df[anomalies_df["is_anomaly"]] if not anomalies_df.empty else pd.DataFrame()
+    flagged_anomalies = anomalies_df[anomalies_df["is_anomaly"]] if (not anomalies_df.empty and "is_anomaly" in anomalies_df.columns) else pd.DataFrame()
     
     quality = audit_dataset_quality(df)
     forecast_res = generate_incident_forecast(df, forecast_horizon=3)
@@ -45,19 +50,19 @@ def generate_intelligence_digest(df: pd.DataFrame, risk_df: pd.DataFrame) -> str
 ---
 
 ## 1. Executive Summary
-Across the historical span of **{min_yr} to {max_yr}**, the platform evaluated **{total_incidents:,}** incident records across **{df['country'].nunique()}** sovereign entities.
+Across the historical span of **{min_yr} to {max_yr}**, the platform evaluated **{total_incidents:,}** incident records across **{df['country'].nunique() if 'country' in df.columns else 0}** sovereign entities.
 * **Cumulative Casualties:** {total_fatalities + total_injured:,} ({total_fatalities:,} Fatalities | {total_injured:,} Non-Fatal Casualties)
 * **Historical Peak Activity:** Year **{peak_incident_year}** ({peak_incident_val:,} logged events)
-* **Data Quality Score:** `{quality['data_quality_score']}/100` (Completeness: `{quality['completeness_pct']}%`, Geocoding: `{quality['geocoding_coverage_pct']}%`)
+* **Data Quality Score:** `{quality.get('data_quality_score', 0)}/100` (Completeness: `{quality.get('completeness_pct', 0)}%`, Geocoding: `{quality.get('geocoding_coverage_pct', 0)}%`)
 
 ---
 
 ## 2. Global Trend Analysis
-* **Trajectory Direction:** **{trends['trend_direction']}** ({trends['recent_span']} vs baseline {trends['prior_span']})
+* **Trajectory Direction:** **{trends.get('trend_direction', 'STABLE')}** ({trends.get('recent_span', 'N/A')} vs baseline {trends.get('prior_span', 'N/A')})
 * **Period Velocity Deltas:**
-  * Incident Volume Delta: `{trends['incident_delta']:+,.1f}%`
-  * Fatalities Delta: `{trends['fatality_delta']:+,.1f}%`
-  * Injuries Delta: `{trends['injured_delta']:+,.1f}%`
+  * Incident Volume Delta: `{trends.get('incident_delta', 0.0):+,.1f}%`
+  * Fatalities Delta: `{trends.get('fatality_delta', 0.0):+,.1f}%`
+  * Injuries Delta: `{trends.get('injured_delta', 0.0):+,.1f}%`
 
 ---
 
@@ -65,7 +70,7 @@ Across the historical span of **{min_yr} to {max_yr}**, the platform evaluated *
 Top sovereign territories accounting for the highest historical incident concentrations:
 """
     for c, cnt in top_countries.items():
-        pct = (cnt / total_incidents) * 100
+        pct = (cnt / total_incidents) * 100 if total_incidents > 0 else 0
         report += f"- **{c}**: {cnt:,} incidents ({pct:.1f}% global density)\n"
 
     report += """
@@ -74,27 +79,37 @@ Top sovereign territories accounting for the highest historical incident concent
 ## 4. Attack Methodology & Tactical Profiles
 """
     for atk, cnt in top_attacks.items():
-        report += f"- **{atk}**: {cnt:,} incidents ({(cnt/total_incidents)*100:.1f}%)\n"
+        pct = (cnt / total_incidents) * 100 if total_incidents > 0 else 0
+        report += f"- **{atk}**: {cnt:,} incidents ({pct:.1f}%)\n"
 
     report += "\n---\n\n## 5. Weapon Category Analysis\n"
     for weap, cnt in top_weapons.items():
-        report += f"- **{weap}**: {cnt:,} incidents ({(cnt/total_incidents)*100:.1f}%)\n"
+        pct = (cnt / total_incidents) * 100 if total_incidents > 0 else 0
+        report += f"- **{weap}**: {cnt:,} incidents ({pct:.1f}%)\n"
 
     report += "\n---\n\n## 6. Target Profile Distribution\n"
     for targ, cnt in top_targets.items():
-        report += f"- **{targ}**: {cnt:,} incidents ({(cnt/total_incidents)*100:.1f}%)\n"
+        pct = (cnt / total_incidents) * 100 if total_incidents > 0 else 0
+        report += f"- **{targ}**: {cnt:,} incidents ({pct:.1f}%)\n"
 
-    if not risk_df.empty:
+    if risk_df is not None and not risk_df.empty:
         report += "\n---\n\n## 7. Country Risk Ranking\n"
         for _, rk in risk_df.head(5).iterrows():
-            report += f"- **{rk['country']}**: Threat Index `{rk['composite_risk_score']}/100` — **{rk['risk_level']} Classification**\n"
+            c_name = rk.get("country", "Unknown")
+            r_score = rk.get("composite_risk_score", rk.get("threat_index", rk.get("risk_score", 0)))
+            r_level = rk.get("risk_level", rk.get("tier", "Active"))
+            report += f"- **{c_name}**: Threat Index `{r_score}/100` — **{r_level} Classification**\n"
+
+    f_yrs = forecast_res.get("future_years", [])
+    f_cnts = forecast_res.get("forecast_counts", [])
+    f_proj = ", ".join([f"{yr}: ~{int(cnt):,}" for yr, cnt in zip(f_yrs, f_cnts)]) if f_yrs else "Insufficient longitudinal baseline"
 
     report += f"""
 ---
 
 ## 8. Forecast Outlook & Uncertainty Bounds
 * **Extrapolation Method:** Holt's Linear Double Exponential Smoothing
-* **Next 3 Horizon Projections:** {', '.join([f'{yr}: ~{int(cnt):,}' for yr, cnt in zip(forecast_res.get('future_years', []), forecast_res.get('forecast_counts', []))])}
+* **Next 3 Horizon Projections:** {f_proj}
 
 ---
 
@@ -109,9 +124,9 @@ Multi-model validation established Random Forest / HistGradientBoosting as the p
 ---
 
 ## 11. Data Quality & Audit Metrics
-* **Total Indexed Incidents:** {quality['total_records']:,}
-* **Geocoding Integrity:** {quality['geocoding_coverage_pct']}%
-* **Completeness:** {quality['completeness_pct']}%
+* **Total Indexed Incidents:** {quality.get('total_records', total_incidents):,}
+* **Geocoding Integrity:** {quality.get('geocoding_coverage_pct', 0)}%
+* **Completeness:** {quality.get('completeness_pct', 0)}%
 
 ---
 

@@ -232,7 +232,6 @@ with tab_backtest:
             use_container_width=True
         )
 
-        # Backtest Actual vs Predicted Trajectory Plot
         st.markdown("#### Actual vs Model Predictions (Holdout Window)")
         holdout_years = res["historical_years"][-backtest["holdout_periods"]:]
         
@@ -257,7 +256,7 @@ with tab_backtest:
 
         fig_bt.update_layout(
             template="plotly_dark",
-            height=320,
+            height=340,
             margin=dict(l=10, r=10, t=20, b=10),
             xaxis_title="Holdout Evaluation Year",
             yaxis_title="Incident Volume",
@@ -270,6 +269,48 @@ with tab_backtest:
         counts_arr = np.array(res["historical_counts"])
         df_wf = run_walk_forward_validation(counts_arr, min_train=12)
         st.dataframe(df_wf, use_container_width=True, hide_index=True)
+
+        st.markdown("#### Multi-Epoch Walk-Forward Rolling Evaluation")
+        min_train_len = 12
+        wf_eval_years = res["historical_years"][min_train_len:]
+        wf_actual = res["historical_counts"][min_train_len:]
+
+        # Walk-forward 1-step rolling prediction series
+        wf_pred_naive = res["historical_counts"][min_train_len - 1:-1]
+        wf_pred_ma = [np.mean(res["historical_counts"][:i][-3:]) for i in range(min_train_len, len(res["historical_counts"]))]
+
+        fig_wf = go.Figure()
+        fig_wf.add_trace(go.Scatter(
+            x=wf_eval_years,
+            y=wf_actual,
+            mode="lines+markers",
+            name="Actual Observed",
+            line=dict(color="#F0F6FC", width=3)
+        ))
+        fig_wf.add_trace(go.Scatter(
+            x=wf_eval_years,
+            y=wf_pred_naive,
+            mode="lines+markers",
+            name="Naive Persistence (Rolling 1-Step)",
+            line=dict(color="#39D353", width=2, dash="dash")
+        ))
+        fig_wf.add_trace(go.Scatter(
+            x=wf_eval_years,
+            y=wf_pred_ma,
+            mode="lines+markers",
+            name="3-Period MA (Rolling 1-Step)",
+            line=dict(color="#FFA657", width=2, dash="dot")
+        ))
+
+        fig_wf.update_layout(
+            template="plotly_dark",
+            height=340,
+            margin=dict(l=10, r=10, t=20, b=10),
+            xaxis_title="Historical Evaluation Epoch",
+            yaxis_title="Incident Volume",
+            legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5)
+        )
+        st.plotly_chart(fig_wf, use_container_width=True)
 
 with tab_comparison:
     st.markdown("#### Comparative Error Metrics Across Competing Engines")

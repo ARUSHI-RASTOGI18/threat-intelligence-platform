@@ -1,0 +1,191 @@
+{
+    "best_model_name": "RandomForestClassifier",
+    "benchmark_comparison": [
+        {
+            "Model": "Dummy Baseline (Most Frequent)",
+            "Accuracy (%)": 54.9,
+            "Balanced Accuracy (%)": 11.11,
+            "Macro F1 (%)": 7.88,
+            "Weighted F1 (%)": 38.92
+        },
+        {
+            "Model": "Logistic Regression (L2 Regularized)",
+            "Accuracy (%)": 79.93,
+            "Balanced Accuracy (%)": 56.93,
+            "Macro F1 (%)": 48.29,
+            "Weighted F1 (%)": 79.98
+        },
+        {
+            "Model": "HistGradientBoostingClassifier",
+            "Accuracy (%)": 83.38,
+            "Balanced Accuracy (%)": 47.14,
+            "Macro F1 (%)": 47.52,
+            "Weighted F1 (%)": 80.65
+        },
+        {
+            "Model": "RandomForestClassifier",
+            "Accuracy (%)": 81.49,
+            "Balanced Accuracy (%)": 56.44,
+            "Macro F1 (%)": 48.62,
+            "Weighted F1 (%)": 80.87
+        }
+    ],
+    "validation_strategy": "Temporal Out-of-Time (Train: <= 2011, Val: 2012\u20132014, Test: 2015\u20132017)",
+    "split_periods": {
+        "train": "1970\u20132011",
+        "val": "2012\u20132014",
+        "test": "2015\u20132017"
+    },
+    "training_timestamp": "2026-08-27 11:30:40 UTC",
+    "train_samples": 104778,
+    "val_samples": 37461,
+    "test_samples": 39452,
+    "best_model_metrics": {
+        "accuracy": 78.25,
+        "balanced_accuracy": 56.21,
+        "macro_precision": 48.06,
+        "macro_recall": 56.21,
+        "macro_f1": 48.54,
+        "weighted_f1": 76.7
+    },
+    "target_classes": [
+        "Armed Assault",
+        "Assassination",
+        "Bombing/Explosion",
+        "Facility/Infrastructure Attack",
+        "Hijacking",
+        "Hostage Taking (Barricade Incident)",
+        "Hostage Taking (Kidnapping)",
+        "Unarmed Assault",
+        "Unknown"
+    ],
+    "confusion_matrix": [
+        [
+            5311,
+            1229,
+            832,
+            205,
+            97,
+            111,
+            222,
+            459,
+            0
+        ],
+        [
+            624,
+            1242,
+            436,
+            17,
+            5,
+            30,
+            58,
+            74,
+            78
+        ],
+        [
+            0,
+            182,
+            19490,
+            0,
+            40,
+            40,
+            0,
+            42,
+            0
+        ],
+        [
+            87,
+            32,
+            0,
+            1702,
+            29,
+            18,
+            127,
+            15,
+            142
+        ],
+        [
+            39,
+            15,
+            6,
+            5,
+            27,
+            4,
+            25,
+            1,
+            17
+        ],
+        [
+            68,
+            12,
+            50,
+            16,
+            5,
+            17,
+            31,
+            15,
+            11
+        ],
+        [
+            1146,
+            205,
+            84,
+            53,
+            41,
+            40,
+            301,
+            285,
+            1052
+        ],
+        [
+            0,
+            12,
+            0,
+            31,
+            0,
+            0,
+            0,
+            224,
+            0
+        ],
+        [
+            0,
+            13,
+            0,
+            2,
+            2,
+            0,
+            64,
+            0,
+            2557
+        ]
+    ],
+    "permutation_importance": [
+        {
+            "root_feature": "Weapon Type",
+            "importance": 0.5578333333333334,
+            "importance_pct": 95.06
+        },
+        {
+            "root_feature": "Success",
+            "importance": 0.026333333333333393,
+            "importance_pct": 4.49
+        },
+        {
+            "root_feature": "Target Type",
+            "importance": 0.002000000000000334,
+            "importance_pct": 0.34
+        },
+        {
+            "root_feature": "Suicide",
+            "importance": 0.0006666666666667043,
+            "importance_pct": 0.11
+        },
+        {
+            "root_feature": "Region",
+            "importance": 0.0,
+            "importance_pct": 0.0
+        }
+    ],
+    "temporal_coverage": "1970 \u2013 2017"
+}
